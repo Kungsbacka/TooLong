@@ -208,7 +208,7 @@ namespace TooLong
                         {
                             continue;
                         }
-                        string fullPath = $"{currentDir}\\{findFileData.cFileName}";
+                        string fullPath = currentDir + "\\" + findFileData.cFileName;
                         scanTotal++;
                         if ((findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
                         {
@@ -223,7 +223,7 @@ namespace TooLong
                                 overMax++;
                             }
                         }
-                        if (scanTotal % 100 == 0)
+                        if (scanTotal % 300 == 0)
                         {
                             var resultsCopy = results.ToArray();
                             _synchronizationContext.Post(
@@ -306,16 +306,12 @@ namespace TooLong
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var settingsWindow = new SettingsWindow();
-            bool? result = settingsWindow.ShowDialog();
-            if (result == true)
+            settingsWindow.ShowDialog();
+            if (settingsWindow.ShouldClearMru)
             {
-                if (settingsWindow.ShouldClearMru)
-                {
-                    PathComboBox.Items.Clear();
-                    PathComboBox.Text = "";
-                    Settings.Default.MRU.Clear();
-                }
-                Settings.Default.Save();
+                PathComboBox.Items.Clear();
+                PathComboBox.Text = "";
+                Settings.Default.MRU.Clear();
             }
         }
 

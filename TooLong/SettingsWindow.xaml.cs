@@ -49,7 +49,6 @@ namespace TooLong
         private void ClearMruButton_Click(object sender, RoutedEventArgs e)
         {
             ShouldClearMru = true;
-            DialogResult = true;
             Close();
         }
 
@@ -59,7 +58,6 @@ namespace TooLong
             {
                 Settings.Default.SubstDriveLetter = (string)DriveLetterComboBox.SelectedItem;
             }
-            DialogResult = true;
             Close();
         }
 
