@@ -1,0 +1,36 @@
+﻿<Window x:Class="TooLong.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ns="clr-namespace:TooLong"
+        mc:Ignorable="d"
+        FontSize="16px"
+        Title="{ns:Loc AboutWindowTitle}" Height="300" Width="300" ResizeMode="NoResize"
+        KeyDown="Window_KeyDown">
+    <Grid>
+        <Rectangle>
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#e4f5fc" Offset="0.0"/>
+                    <GradientStop Color="#bfe8f9" Offset="0.25" />
+                    <GradientStop Color="#9fd8ef" Offset="0.75" />
+                    <GradientStop Color="#2ab0ed" Offset="1.0" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <StackPanel Grid.Row="0" Margin="5">
+            <TextBlock FontSize="20" Text="TooLong"/>
+            <TextBlock FontStyle="Italic" Text="{ns:Loc AboutSubTitle}"/>
+            <TextBlock Text="Version 1.0" Margin="0,30,0,0"/>
+            <TextBlock Text="Copyright 2017 Jonas Sjömark"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1">
+            <Button Height="30" Content="{ns:Loc Close}" Click="CloseButton_Click"/>
+        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+    </Grid>
+</Window>

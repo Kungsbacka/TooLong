@@ -1,0 +1,32 @@
+﻿<Window x:Class="TooLong.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ns="clr-namespace:TooLong"
+        mc:Ignorable="d"
+        FontSize="16px"
+        Title="{ns:Loc Settings}" Height="300" Width="300"
+        KeyDown="Window_KeyDown">
+    <Grid Margin="5">
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="{ns:Loc DriveLetter}"/>
+            <ComboBox MinHeight="30" Name="DriveLetterComboBox" IsEditable="False"/>
+            <Separator Margin="0,5,0,5"/>
+            <Button MinHeight="30" Content="{ns:Loc ClearMRU}" Click="ClearMruButton_Click"/>
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="20,0,20,0">
+            <Button Grid.Column="0" MinHeight="30" Content="{ns:Loc Cancel}" Click="CancelButton_Click"/>
+            <Button Grid.Column="2" MinHeight="30" Content="{ns:Loc Save}" Click="SaveButton_Click"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+    </Grid>
+</Window>
