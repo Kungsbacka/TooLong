@@ -25,7 +25,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <UpdateUrl></UpdateUrl>
+    <UpdateUrl>
+    </UpdateUrl>
     <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -90,6 +91,7 @@
     </Compile>
     <Compile Include="DosDeviceHelpers.cs" />
     <Compile Include="ScanResult.cs" />
+    <Compile Include="ScanStatus.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>

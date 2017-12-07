@@ -4,11 +4,19 @@ using System.Text;
 
 namespace TooLong
 {
-    static class NativeMethods
+    internal static class NativeMethods
     {
         internal const int MAX_PATH = 260;
+
         internal const int INVALID_HANDLE_VALUE = -1;
-        internal const int ERROR_FILE_NOT_FOUND = 2;
+
+        internal const int DDD_REMOVE_DEFINITION = 2;
+
+        internal const int ERROR_FILE_NOT_FOUND    = 2;
+        internal const int ERROR_PATH_NOT_FOUND    = 3;
+        internal const int ERROR_BAD_NETPATH       = 53;
+        internal const int ERROR_INVALID_PARAMETER = 87;
+        internal const int ERROR_INVALID_NAME      = 123;
 
         internal enum FINDEX_INFO_LEVELS
         {
@@ -66,8 +74,6 @@ namespace TooLong
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool FindClose(IntPtr handle);
-
-        internal const int DDD_REMOVE_DEFINITION = 2;
 
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]

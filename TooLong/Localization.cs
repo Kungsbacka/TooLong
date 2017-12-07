@@ -5,8 +5,7 @@ using System.Windows.Data;
 
 namespace TooLong
 {
-    public class TranslationSource
-            : INotifyPropertyChanged
+    public class TranslationSource : INotifyPropertyChanged
     {
         private static readonly TranslationSource instance = new TranslationSource();
 
@@ -43,8 +42,7 @@ namespace TooLong
         public event PropertyChangedEventHandler PropertyChanged;
     }
 
-    public class LocExtension
-        : Binding
+    public class LocExtension : Binding
     {
         public LocExtension(string name)
             : base("[" + name + "]")

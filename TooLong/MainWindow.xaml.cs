@@ -8,16 +8,15 @@ using System.Windows.Input;
 using System.Threading;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
-using System.Text;
+using System.IO;
 using TooLong.Properties;
 using static TooLong.NativeMethods;
+using System.Runtime.InteropServices;
 
 namespace TooLong
 {
     public partial class MainWindow : Window
     {
-        private readonly SynchronizationContext _synchronizationContext;
         private CancellationTokenSource _cancellationTokenSource;
         private bool _isScanning = false;
         public ObservableCollection<ScanResult> _scanResult;
@@ -48,7 +47,6 @@ namespace TooLong
             }
             LimitTextBox.Text = Settings.Default.Limit.ToString();
             _scanResult = new ObservableCollection<ScanResult>();
-            _synchronizationContext = SynchronizationContext.Current;
             ResultDataGrid.ItemsSource = _scanResult;
         }
 
@@ -76,20 +74,61 @@ namespace TooLong
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
             ToggleGui();
-            await Task.Run(() => { Scan(path, limit, token); }, token);
+            var callback = new Progress<ScanStatus>(ProgressHandler);
+            await Task.Run(() => {
+                Scan(path, limit, token, callback);
+            }, token);
             ToggleGui(token.IsCancellationRequested);
             _cancellationTokenSource.Dispose();
             _cancellationTokenSource = null;
         }
 
+        private void ProgressHandler(ScanStatus status)
+        {
+            // This is called by Scan() asynchronously and can potentially be called again
+            // before the first call finishes.
+            var ts = TranslationSource.Instance;
+            StatusBarStatsTextBlock.Text = string.Format(ts["StatusBarStatsText"],
+                status.TotalPathsScanned,
+                status.OverLimit,
+                status.OverMaxLen
+            );
+            foreach (var item in status.ScanResult)
+            {
+                _scanResult.Add(item);
+            }
+        }
+
         private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            // Handling of long paths has changed in .NET 4.6.2 and .NET Standard.
+            // Consider using System.IO.Path to manipulate paths if targeting a
+            // newer framework version.
+            // (https://blogs.msdn.microsoft.com/jeremykuhne/2016/06/21/more-on-new-net-path-handling/)
             var row = (DataGridRow)sender;
-            var path = ((ScanResult)row.DataContext).Path;
-            if (path.Length > MAX_PATH)
+            var scanResult = (ScanResult)row.DataContext;
+            var path = scanResult.Path.TrimEnd(Path.DirectorySeparatorChar);
+            if (!scanResult.IsDirectory)
             {
-                int i = MAX_PATH;
-                while (path[i] != '\\' && i-- > 0) ;
+                int i = path.Length - 1;
+                while(i > 0 && path[i] != Path.DirectorySeparatorChar)
+                {
+                    i--;
+                }
+                if (i <= 0)
+                {
+                    return;
+                }
+                path = path.Substring(0, i);
+                path.TrimEnd(Path.DirectorySeparatorChar);
+            }
+            if (path.Length >= MAX_PATH)
+            {
+                int i = MAX_PATH - 1;
+                while (i > 0 && path[i] != Path.DirectorySeparatorChar)
+                {
+                    i--;
+                }
                 if (i <= 0)
                 {
                     return;
@@ -107,9 +146,8 @@ namespace TooLong
                 {
                     return;
                 }
-                path = Settings.Default.SubstDriveLetter + "\\" + sub;
+                path = Settings.Default.SubstDriveLetter + Path.DirectorySeparatorChar + sub;
             }
-            path = System.IO.Path.GetDirectoryName(path);
             System.Diagnostics.Process.Start(path);
         }
 
@@ -129,16 +167,6 @@ namespace TooLong
             if (string.IsNullOrEmpty(PathComboBox.Text))
             {
                 DisplayError(ts["ErrorEmptyPath"]);
-                return false;
-            }
-            if (PathComboBox.Text.IndexOfAny(System.IO.Path.GetInvalidPathChars()) > -1)
-            {
-                DisplayError(ts["ErrorIllegalCharsInPath"]);
-                return false;
-            }
-            if (!System.IO.Directory.Exists(PathComboBox.Text))
-            {
-                DisplayError(ts["ErrorDirectoryNotFound"]);
                 return false;
             }
             return true;
@@ -178,14 +206,27 @@ namespace TooLong
             }
         }
 
-        private void Scan(string startDir, int limit, CancellationToken cancellationToken)
+        private void UpdateGUI(object scanStatus)
         {
-            if (string.IsNullOrWhiteSpace(startDir) || startDir.IndexOfAny(System.IO.Path.GetInvalidPathChars()) > -1)
+            // This is called by Scan asynchronously. This means that results could be added  
+            var ts = TranslationSource.Instance;
+            var status = (ScanStatus)scanStatus;
+            StatusBarStatsTextBlock.Text = string.Format(ts["StatusBarStatsText"],
+                status.TotalPathsScanned,
+                status.OverLimit,
+                status.OverMaxLen
+            );
+            foreach (var item in status.ScanResult)
             {
-                throw new ArgumentException(nameof(startDir));
+                _scanResult.Add(item);
             }
+        }
+
+        private void Scan(string startDir, int limit, CancellationToken cancellationToken, IProgress<ScanStatus> progress)
+        {
             var results = new List<ScanResult>();
             int scanTotal = 0, overLimit = 0, overMax = 0;
+            ScanStatus scanStatus;
             WIN32_FIND_DATA findFileData = new WIN32_FIND_DATA();
             var stack = new Stack<string>();
             stack.Push(startDir);
@@ -200,7 +241,18 @@ namespace TooLong
                     IntPtr.Zero,
                     FIND_FIRST_EX_LARGE_FETCH
                 );
-                if (hFind.ToInt64() != INVALID_HANDLE_VALUE)
+                if (hFind.ToInt64() == INVALID_HANDLE_VALUE)
+                {
+                    int error = Marshal.GetLastWin32Error();
+                    /* TODO:
+                     * ERROR_FILE_NOT_FOUND
+                     * ERROR_PATH_NOT_FOUND
+                     * ERROR_BAD_NETPATH
+                     * ERROR_INVALID_PARAMETER
+                     * ERROR_INVALID_NAME
+                     */
+                }
+                else
                 {
                     do
                     {
@@ -210,51 +262,52 @@ namespace TooLong
                         }
                         string fullPath = currentDir + "\\" + findFileData.cFileName;
                         scanTotal++;
-                        if ((findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
+                        bool isDirectory = (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
+                        if (isDirectory)
                         {
                             stack.Push(fullPath);
                         }
                         if (fullPath.Length >= limit)
                         {
-                            results.Add(new ScanResult() { Path = fullPath, Length = fullPath.Length });
+                            results.Add(new ScanResult()
+                            {
+                                Path = fullPath,
+                                Length = fullPath.Length,
+                                IsDirectory = isDirectory
+                            });
                             overLimit++;
                             if (fullPath.Length > 260)
                             {
                                 overMax++;
                             }
                         }
-                        if (scanTotal % 300 == 0)
+                        if (scanTotal % 300 == 0 && progress != null)
                         {
-                            var resultsCopy = results.ToArray();
-                            _synchronizationContext.Post(
-                                new SendOrPostCallback(o =>
-                                {
-                                    var ts = TranslationSource.Instance;
-                                    StatusBarStatsTextBlock.Text = string.Format(ts["StatusBarStatsText"], scanTotal, overLimit, overMax);
-                                    foreach (var item in resultsCopy)
-                                    {
-                                        _scanResult.Add(item);
-                                    }
-                                }), resultsCopy
-                            );
-                            results.Clear();
+                            scanStatus = new ScanStatus()
+                            {
+                                ScanResult = results.ToArray(),
+                                TotalPathsScanned = scanTotal,
+                                OverLimit = overLimit,
+                                OverMaxLen = overMax
+                            };
+                            progress.Report(scanStatus);
                         }
                     }
                     while (FindNextFile(hFind, findFileData) && !cancellationToken.IsCancellationRequested);
                     FindClose(hFind);
                 }
             }
-            _synchronizationContext.Post(
-                new SendOrPostCallback(o =>
+            if (progress != null)
+            {
+                scanStatus = new ScanStatus()
                 {
-                    var ts = TranslationSource.Instance;
-                    StatusBarStatsTextBlock.Text = string.Format(ts["StatusBarStatsText"], scanTotal, overLimit, overMax);
-                    foreach (var item in results)
-                    {
-                        _scanResult.Add(item);
-                    }
-                }),
-            results);
+                    ScanResult = results.ToArray(),
+                    TotalPathsScanned = scanTotal,
+                    OverLimit = overLimit,
+                    OverMaxLen = overMax
+                };
+                progress.Report(scanStatus);
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

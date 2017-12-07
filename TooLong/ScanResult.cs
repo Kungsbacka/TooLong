@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TooLong
 {
@@ -11,34 +7,42 @@ namespace TooLong
     {
         private string _path;
         private int _length;
+        private bool _isDirectory;
 
         public string Path
         {
-            get
-            {
-                return _path;
-            }
+            get { return _path; }
             set
             {
                 if (value != _path)
                 {
                     _path = value;
-                    NotifyPropertyChanged("Path");
+                    NotifyPropertyChanged(nameof(Path));
                 }
             }
         }
         public int Length
         {
-            get
-            {
-                return _length;
-            }
+            get { return _length; }
             set
             {
                 if (value != _length)
                 {
                     _length = value;
-                    NotifyPropertyChanged("Length");
+                    NotifyPropertyChanged(nameof(Length));
+                }
+            }
+        }
+
+        public bool IsDirectory
+        {
+            get { return _isDirectory; }
+            set
+            {
+                if (value != _isDirectory)
+                {
+                    _isDirectory = value;
+                    NotifyPropertyChanged(nameof(IsDirectory));
                 }
             }
         }
