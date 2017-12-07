@@ -76,11 +76,10 @@ namespace TooLong
             {
                 return false;
             }
-            if (input[1] != ':' || input[0] < 'A' || input[0] > 'Z')
-            {
-                return false;
-            }
-            return true;        
+            return
+                input[0] >= 'A' &&
+                input[0] <= 'Z' &&
+                input[1] == ':';
         }
     }
 }
