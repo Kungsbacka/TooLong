@@ -90,8 +90,8 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="DosDeviceHelpers.cs" />
-    <Compile Include="ScanResult.cs" />
-    <Compile Include="ScanStatus.cs" />
+    <Compile Include="Scanner.cs" />
+    <Compile Include="ScanItem.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>

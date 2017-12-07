@@ -14,6 +14,7 @@ namespace TooLong
 
         internal const int ERROR_FILE_NOT_FOUND    = 2;
         internal const int ERROR_PATH_NOT_FOUND    = 3;
+        internal const int ERROR_ACCESS_DENIED     = 5;
         internal const int ERROR_BAD_NETPATH       = 53;
         internal const int ERROR_INVALID_PARAMETER = 87;
         internal const int ERROR_INVALID_NAME      = 123;

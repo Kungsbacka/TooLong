@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace TooLong
 {
-    public class ScanResult : INotifyPropertyChanged
+    public class ScanItem : INotifyPropertyChanged
     {
         private string _path;
         private int _length;

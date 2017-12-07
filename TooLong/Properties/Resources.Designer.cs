@@ -133,15 +133,6 @@ namespace TooLong.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A directory with that path does not exist.
-        /// </summary>
-        public static string ErrorDirectoryNotFound {
-            get {
-                return ResourceManager.GetString("ErrorDirectoryNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Path is empty.
         /// </summary>
         public static string ErrorEmptyPath {
@@ -151,11 +142,11 @@ namespace TooLong.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path contains illegal characters.
+        ///   Looks up a localized string similar to Illegal path.
         /// </summary>
-        public static string ErrorIllegaCharsInPath {
+        public static string ErrorIllegalPath {
             get {
-                return ResourceManager.GetString("ErrorIllegaCharsInPath", resourceCulture);
+                return ResourceManager.GetString("ErrorIllegalPath", resourceCulture);
             }
         }
         
@@ -174,6 +165,24 @@ namespace TooLong.Properties {
         public static string ErrorParsePathLimit {
             get {
                 return ResourceManager.GetString("ErrorParsePathLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path does not exist.
+        /// </summary>
+        public static string ErrorPathNotFound {
+            get {
+                return ResourceManager.GetString("ErrorPathNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown error.
+        /// </summary>
+        public static string ErrorUnknown {
+            get {
+                return ResourceManager.GetString("ErrorUnknown", resourceCulture);
             }
         }
         
