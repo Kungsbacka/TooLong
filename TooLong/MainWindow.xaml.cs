@@ -18,7 +18,7 @@ namespace TooLong
     {
         private CancellationTokenSource _cancellationTokenSource;
         private bool _isScanning = false;
-        public ObservableCollection<ScanItem> _scanResult;
+        private ObservableCollection<ScanItem> _scanResult;
 
         public MainWindow()
         {

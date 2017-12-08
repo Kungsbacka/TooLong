@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 using static TooLong.NativeMethods;
@@ -8,7 +9,59 @@ namespace TooLong
 {
     internal static class Scanner
     {
-        public class ScanResult
+        internal class ScanItem : INotifyPropertyChanged
+        {
+            private string _path;
+            private int _length;
+            private bool _isDirectory;
+
+            public string Path
+            {
+                get { return _path; }
+                set
+                {
+                    if (value != _path)
+                    {
+                        _path = value;
+                        NotifyPropertyChanged(nameof(Path));
+                    }
+                }
+            }
+            public int Length
+            {
+                get { return _length; }
+                set
+                {
+                    if (value != _length)
+                    {
+                        _length = value;
+                        NotifyPropertyChanged(nameof(Length));
+                    }
+                }
+            }
+
+            public bool IsDirectory
+            {
+                get { return _isDirectory; }
+                set
+                {
+                    if (value != _isDirectory)
+                    {
+                        _isDirectory = value;
+                        NotifyPropertyChanged(nameof(IsDirectory));
+                    }
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            private void NotifyPropertyChanged(String info)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+            }
+        }
+
+        internal class ScanResult
         {
             public ScanItem[] Items { get; set; }
             public int TotalPathsScanned { get; set; }
@@ -60,8 +113,10 @@ namespace TooLong
                             status = ScanStatus.UnknownError;
                             break;
                     }
-                    scanResult = new ScanResult() { Status = status };
-                    progress.Report(scanResult);
+                    if (progress != null)
+                    {
+                        progress.Report(new ScanResult() { Status = status });
+                    }
                     if (status != ScanStatus.AccessDenied)
                     {
                         return;
@@ -82,7 +137,7 @@ namespace TooLong
                         {
                             stack.Push(fullPath);
                         }
-                        if (fullPath.Length >= limit)
+                        if (fullPath.Length > limit)
                         {
                             results.Add(new ScanItem()
                             {
@@ -91,10 +146,10 @@ namespace TooLong
                                 IsDirectory = isDirectory
                             });
                             overLimit++;
-                            if (fullPath.Length > MAX_PATH)
-                            {
-                                overMax++;
-                            }
+                        }
+                        if (fullPath.Length > MAX_PATH)
+                        {
+                            overMax++;
                         }
                         if (scanTotal % 300 == 0 && progress != null)
                         {
