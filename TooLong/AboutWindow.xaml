@@ -22,7 +22,7 @@
         <StackPanel Grid.Row="0" Margin="5">
             <TextBlock FontSize="20" Text="TooLong"/>
             <TextBlock FontStyle="Italic" Text="{ns:Loc AboutSubTitle}"/>
-            <TextBlock Text="Version 1.0" Margin="0,30,0,0"/>
+            <TextBlock Name="VersionTextBlock" Text="Version 1.0" Margin="0,30,0,0"/>
             <TextBlock Text="Copyright 2017 Jonas Sjömark"/>
         </StackPanel>
         <StackPanel Grid.Row="1">

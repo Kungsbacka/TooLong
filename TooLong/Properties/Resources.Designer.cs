@@ -133,6 +133,15 @@ namespace TooLong.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access Denied.
+        /// </summary>
+        public static string ErrorAcessDenied {
+            get {
+                return ResourceManager.GetString("ErrorAcessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path is empty.
         /// </summary>
         public static string ErrorEmptyPath {
@@ -169,7 +178,7 @@ namespace TooLong.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path does not exist.
+        ///   Looks up a localized string similar to Path not found.
         /// </summary>
         public static string ErrorPathNotFound {
             get {
@@ -228,6 +237,15 @@ namespace TooLong.Properties {
         public static string ResultGridHeaderPath {
             get {
                 return ResourceManager.GetString("ResultGridHeaderPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string ResultGridHeaderStatus {
+            get {
+                return ResourceManager.GetString("ResultGridHeaderStatus", resourceCulture);
             }
         }
         
@@ -291,6 +309,15 @@ namespace TooLong.Properties {
         public static string StatusBarStatsText {
             get {
                 return ResourceManager.GetString("StatusBarStatsText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version {0}.{1}.{2} (rev. {3}).
+        /// </summary>
+        public static string VersionString {
+            get {
+                return ResourceManager.GetString("VersionString", resourceCulture);
             }
         }
         

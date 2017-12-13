@@ -89,24 +89,6 @@ namespace TooLong
             // This is called by Scan() asynchronously and can potentially be called again
             // before the first call finishes.
             var ts = TranslationSource.Instance;
-
-            // Swallow access denied for now. Add a column for showing this in GUI later.
-            if (scanResult.Status != ScanStatus.Ok && scanResult.Status != ScanStatus.AccessDenied)
-            {
-                switch (scanResult.Status)
-                {
-                    case ScanStatus.IllegalPath:
-                        DisplayError(ts["ErrorIllegalPath"]);
-                        break;
-                    case ScanStatus.PathNotFound:
-                        DisplayError(ts["ErrorPathNotFound"]);
-                        break;
-                    case ScanStatus.UnknownError:
-                        DisplayError(ts["ErrorUnknown"]);
-                        break;
-                }
-                return;
-            }
             StatusBarStatsTextBlock.Text = string.Format(ts["StatusBarStatsText"],
                 scanResult.TotalPathsScanned,
                 scanResult.OverLimit,
@@ -171,6 +153,15 @@ namespace TooLong
                 path = Settings.Default.SubstDriveLetter + Path.DirectorySeparatorChar + sub;
             }
             System.Diagnostics.Process.Start(path);
+        }
+
+        private void ResultDataGrid_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
+        {
+            // Give status column room to grow by temporarily shrinking the path column
+            var dataGrid = (DataGrid)sender;
+            dataGrid.Columns[0].Width = 0;
+            dataGrid.UpdateLayout();
+            dataGrid.Columns[0].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
         }
 
         private bool CheckInput()

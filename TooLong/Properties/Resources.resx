@@ -141,6 +141,9 @@
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
+  <data name="ErrorAcessDenied" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
   <data name="ErrorEmptyPath" xml:space="preserve">
     <value>Path is empty</value>
   </data>
@@ -154,7 +157,7 @@
     <value>Could not parse limit. Is it a number?</value>
   </data>
   <data name="ErrorPathNotFound" xml:space="preserve">
-    <value>Path does not exist</value>
+    <value>Path not found</value>
   </data>
   <data name="ErrorUnknown" xml:space="preserve">
     <value>Unknown error</value>
@@ -173,6 +176,9 @@
   </data>
   <data name="ResultGridHeaderPath" xml:space="preserve">
     <value>Path</value>
+  </data>
+  <data name="ResultGridHeaderStatus" xml:space="preserve">
+    <value>Status</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -194,6 +200,9 @@
   </data>
   <data name="StatusBarStatsText" xml:space="preserve">
     <value>Total: {0} / Over limit: {1} / Over max: {2}</value>
+  </data>
+  <data name="VersionString" xml:space="preserve">
+    <value>Version {0}.{1}.{2} (rev. {3})</value>
   </data>
   <data name="WarningInvalidDriveLetter" xml:space="preserve">
     <value>Configuration contains an invalid drive letter. Falling back to Z:. Change drive letter in Settings.</value>

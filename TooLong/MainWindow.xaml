@@ -5,9 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ns="clr-namespace:TooLong"
         mc:Ignorable="d"
-        Title="TooLong" Height="600" Width="700"
+        Title="TooLong" Height="600" Width="800"
         FontSize="16px"
         Closing="Window_Closing">
+    <Window.Resources>
+        <ns:ScanErrorConverter x:Key="scanErrorConverter"/>
+    </Window.Resources>
     <DockPanel>
         <Menu Height="30" DockPanel.Dock="Top" FontSize="16">
             <MenuItem Header="{ns:Loc File}">
@@ -43,10 +46,17 @@
                 </Grid.ColumnDefinitions>
             </Grid>
             <DataGrid Grid.Row="1" Margin="0, 10, 0 ,0" Name="ResultDataGrid" AutoGenerateColumns="False" 
-                      IsReadOnly="True" SelectionUnit="Cell">
+                      IsReadOnly="True" SelectionUnit="Cell" TargetUpdated="ResultDataGrid_TargetUpdated">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{ns:Loc ResultGridHeaderPath}" Width="*" Binding="{Binding Path=Path}"/>
-                    <DataGridTextColumn Header="{ns:Loc ResultGridHeaderLength}" Width="70" Binding="{Binding Path=Length}"/>
+                    <DataGridTextColumn Header="{ns:Loc ResultGridHeaderPath}" Width="1*" Binding="{Binding Path=Path}"/>
+                    <DataGridTextColumn Header="{ns:Loc ResultGridHeaderLength}" Binding="{Binding Path=Length}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="{ns:Loc ResultGridHeaderStatus}" Width="Auto" Binding="{Binding Path=Error, Converter={StaticResource scanErrorConverter}, NotifyOnTargetUpdated=True}"/>
                 </DataGrid.Columns>
                 <DataGrid.Resources>
                     <Style TargetType="DataGridRow">

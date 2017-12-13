@@ -141,6 +141,9 @@
   <data name="Error" xml:space="preserve">
     <value>Fel</value>
   </data>
+  <data name="ErrorAccessDenied" xml:space="preserve">
+    <value>Åtkomst nekad</value>
+  </data>
   <data name="ErrorEmptyPath" xml:space="preserve">
     <value>Fältet för sökväg är tomt</value>
   </data>
@@ -154,7 +157,7 @@
     <value>Maxlängden går inte att tolka. Se till att den bara innehåller siffror.</value>
   </data>
   <data name="ErrorPathNotFound" xml:space="preserve">
-    <value>Sökvägen går inte att komma åt</value>
+    <value>Sökvägen finns inte</value>
   </data>
   <data name="ErrorUnknown" xml:space="preserve">
     <value>Ett okänt fel uppstod</value>
@@ -173,6 +176,9 @@
   </data>
   <data name="ResultGridHeaderPath" xml:space="preserve">
     <value>Sökväg</value>
+  </data>
+  <data name="ResultGridHeaderStatus" xml:space="preserve">
+    <value>Status</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Spara</value>
@@ -194,6 +200,9 @@
   </data>
   <data name="StatusBarStatsText" xml:space="preserve">
     <value>Totalt: {0} / Över gräns: {1} / Över max: {2}</value>
+  </data>
+  <data name="VersionString" xml:space="preserve">
+    <value>Version {0}.{1}.{2} (rev. {3})</value>
   </data>
   <data name="WarningInvalidDriveLetter" xml:space="preserve">
     <value>Konfigurationen innehåller en felaktig enhetsbokstav. Använder Z: så länge. Ändra i Inställningar.</value>

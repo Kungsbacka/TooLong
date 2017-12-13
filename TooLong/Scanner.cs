@@ -14,6 +14,7 @@ namespace TooLong
             private string _path;
             private int _length;
             private bool _isDirectory;
+            private ScanError _error;
 
             public string Path
             {
@@ -53,6 +54,19 @@ namespace TooLong
                 }
             }
 
+            public ScanError Error
+            {
+                get { return _error; }
+                set
+                {
+                    if (value != _error)
+                    {
+                        _error = value;
+                        NotifyPropertyChanged(nameof(Error));
+                    }
+                }
+            }
+
             public event PropertyChangedEventHandler PropertyChanged;
 
             private void NotifyPropertyChanged(String info)
@@ -67,10 +81,9 @@ namespace TooLong
             public int TotalPathsScanned { get; set; }
             public int OverLimit { get; set; }
             public int OverMaxLen { get; set; }
-            public ScanStatus Status { get; set; }
         }
 
-        internal enum ScanStatus { Ok, PathNotFound, AccessDenied, IllegalPath, UnknownError };
+        internal enum ScanError { None, PathNotFound, AccessDenied, IllegalPath, UnknownError };
 
         internal static void Scan(string scanPath, int limit, CancellationToken cancellationToken, IProgress<ScanResult> progress)
         {
@@ -82,6 +95,15 @@ namespace TooLong
             stack.Push(scanPath);
             while (stack.Count > 0)
             {
+                scanResult = new ScanResult()
+                {
+                    Items = results.ToArray(),
+                    TotalPathsScanned = scanTotal,
+                    OverLimit = overLimit,
+                    OverMaxLen = overMax
+                };
+                progress.Report(scanResult);
+                results.Clear();
                 string currentDir = stack.Pop();
                 IntPtr hFind = FindFirstFileEx(
                     currentDir + @"\*",
@@ -93,93 +115,63 @@ namespace TooLong
                 );
                 if (hFind.ToInt64() == INVALID_HANDLE_VALUE)
                 {
-
-                    ScanStatus status;
+                    ScanError error;
                     switch (Marshal.GetLastWin32Error())
                     {
                         case ERROR_FILE_NOT_FOUND:
                         case ERROR_PATH_NOT_FOUND:
                         case ERROR_BAD_NETPATH:
-                            status = ScanStatus.PathNotFound;
+                            error = ScanError.PathNotFound;
                             break;
                         case ERROR_ACCESS_DENIED:
-                            status = ScanStatus.AccessDenied;
+                            error = ScanError.AccessDenied;
                             break;
                         case ERROR_INVALID_NAME:
                         case ERROR_INVALID_PARAMETER:
-                            status = ScanStatus.IllegalPath;
+                            error = ScanError.IllegalPath;
                             break;
                         default:
-                            status = ScanStatus.UnknownError;
+                            error = ScanError.UnknownError;
                             break;
                     }
-                    if (progress != null)
+                    results.Add(new ScanItem()
                     {
-                        progress.Report(new ScanResult() { Status = status });
+                        Path = currentDir,
+                        Length = currentDir.Length,
+                        Error = error
+                    });
+                    continue;
+                }
+                do
+                {
+                    if (findFileData.cFileName == "." || findFileData.cFileName == "..")
+                    {
+                        continue;
                     }
-                    if (status != ScanStatus.AccessDenied)
+                    string fullPath = currentDir + "\\" + findFileData.cFileName;
+                    scanTotal++;
+                    bool isDirectory = (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
+                    if (isDirectory)
                     {
-                        return;
+                        stack.Push(fullPath);
+                    }
+                    if (fullPath.Length > limit)
+                    {
+                        results.Add(new ScanItem()
+                        {
+                            Path = fullPath,
+                            Length = fullPath.Length,
+                            IsDirectory = isDirectory
+                        });
+                        overLimit++;
+                    }
+                    if (fullPath.Length > MAX_PATH)
+                    {
+                        overMax++;
                     }
                 }
-                else
-                {
-                    do
-                    {
-                        if (findFileData.cFileName == "." || findFileData.cFileName == "..")
-                        {
-                            continue;
-                        }
-                        string fullPath = currentDir + "\\" + findFileData.cFileName;
-                        scanTotal++;
-                        bool isDirectory = (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
-                        if (isDirectory)
-                        {
-                            stack.Push(fullPath);
-                        }
-                        if (fullPath.Length > limit)
-                        {
-                            results.Add(new ScanItem()
-                            {
-                                Path = fullPath,
-                                Length = fullPath.Length,
-                                IsDirectory = isDirectory
-                            });
-                            overLimit++;
-                        }
-                        if (fullPath.Length > MAX_PATH)
-                        {
-                            overMax++;
-                        }
-                        if (scanTotal % 300 == 0 && progress != null)
-                        {
-                            scanResult = new ScanResult()
-                            {
-                                Items = results.ToArray(),
-                                TotalPathsScanned = scanTotal,
-                                OverLimit = overLimit,
-                                OverMaxLen = overMax,
-                                Status = ScanStatus.Ok
-                            };
-                            results.Clear();
-                            progress.Report(scanResult);
-                        }
-                    }
-                    while (FindNextFile(hFind, findFileData) && !cancellationToken.IsCancellationRequested);
-                    FindClose(hFind);
-                }
-            }
-            if (progress != null)
-            {
-                scanResult = new ScanResult()
-                {
-                    Items = results.ToArray(),
-                    TotalPathsScanned = scanTotal,
-                    OverLimit = overLimit,
-                    OverMaxLen = overMax,
-                    Status = ScanStatus.Ok
-                };
-                progress.Report(scanResult);
+                while (FindNextFile(hFind, findFileData) && !cancellationToken.IsCancellationRequested);
+                FindClose(hFind);
             }
         }
     }

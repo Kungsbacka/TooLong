@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace TooLong
 {
@@ -22,6 +14,9 @@ namespace TooLong
         public AboutWindow()
         {
             InitializeComponent();
+            var ts = TranslationSource.Instance;
+            Version v = Assembly.GetExecutingAssembly().GetName().Version;
+            VersionTextBlock.Text = string.Format(CultureInfo.InvariantCulture, ts["VersionString"], v.Major, v.Minor, v.Build, v.Revision);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
