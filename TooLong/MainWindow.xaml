@@ -46,7 +46,7 @@
                 </Grid.ColumnDefinitions>
             </Grid>
             <DataGrid Grid.Row="1" Margin="0, 10, 0 ,0" Name="ResultDataGrid" AutoGenerateColumns="False" 
-                      IsReadOnly="True" SelectionUnit="Cell" TargetUpdated="ResultDataGrid_TargetUpdated">
+                      IsReadOnly="True" SelectionUnit="Cell">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{ns:Loc ResultGridHeaderPath}" Width="1*" Binding="{Binding Path=Path}"/>
                     <DataGridTextColumn Header="{ns:Loc ResultGridHeaderLength}" Binding="{Binding Path=Length}">

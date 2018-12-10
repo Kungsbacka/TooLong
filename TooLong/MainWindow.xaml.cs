@@ -155,15 +155,6 @@ namespace TooLong
             System.Diagnostics.Process.Start(path);
         }
 
-        private void ResultDataGrid_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
-        {
-            // Give status column room to grow by temporarily shrinking the path column
-            var dataGrid = (DataGrid)sender;
-            dataGrid.Columns[0].Width = 0;
-            dataGrid.UpdateLayout();
-            dataGrid.Columns[0].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-        }
-
         private bool CheckInput()
         {
             var ts = TranslationSource.Instance;
