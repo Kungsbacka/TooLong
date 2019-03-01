@@ -141,7 +141,7 @@
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="ErrorAcessDenied" xml:space="preserve">
+  <data name="ErrorAccessDenied" xml:space="preserve">
     <value>Access Denied</value>
   </data>
   <data name="ErrorEmptyPath" xml:space="preserve">

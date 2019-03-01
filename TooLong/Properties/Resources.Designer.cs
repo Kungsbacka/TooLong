@@ -135,9 +135,9 @@ namespace TooLong.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Access Denied.
         /// </summary>
-        public static string ErrorAcessDenied {
+        public static string ErrorAccessDenied {
             get {
-                return ResourceManager.GetString("ErrorAcessDenied", resourceCulture);
+                return ResourceManager.GetString("ErrorAccessDenied", resourceCulture);
             }
         }
         
