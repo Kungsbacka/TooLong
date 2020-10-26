@@ -7,20 +7,12 @@ namespace TooLong
 {
     public class TranslationSource : INotifyPropertyChanged
     {
-        private static readonly TranslationSource instance = new TranslationSource();
-
-        public static TranslationSource Instance
-        {
-            get { return instance; }
-        }
-
         private readonly ResourceManager resManager = Properties.Resources.ResourceManager;
         private CultureInfo currentCulture = null;
 
-        public string this[string key]
-        {
-            get { return resManager.GetString(key, currentCulture); }
-        }
+        public static TranslationSource Instance { get; } = new TranslationSource();
+
+        public string this[string key] => resManager.GetString(key, currentCulture);
 
         public CultureInfo CurrentCulture
         {
@@ -44,8 +36,7 @@ namespace TooLong
 
     public class LocExtension : Binding
     {
-        public LocExtension(string name)
-            : base("[" + name + "]")
+        public LocExtension(string name) : base("[" + name + "]")
         {
             Mode = BindingMode.OneWay;
             Source = TranslationSource.Instance;
